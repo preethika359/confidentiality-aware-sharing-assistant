@@ -4,26 +4,43 @@
 
 This project is a software-based Confidentiality-Aware Summarisation and Sharing Assistant designed for university environments.
 
-The system checks user roles and document permission levels before allowing access to university information. It also detects sensitive content and warns against unauthorized sharing.
+The system checks user roles and document permission levels before allowing access to university information. It also detects sensitive content and prevents unauthorized summarisation and sharing.
+
+The system provides explanations for access decisions and maintains an auditable decision trail for important actions.
+
+---
 
 ## 2. Problem Statement
 
-University documents may contain public, internal, faculty-only, confidential, and administrator-only information.
+University documents may contain different levels of information such as:
+
+- Public information
+- Internal information
+- Faculty-only information
+- Confidential information
+- Administrator-only information
 
 If confidential information is shared with unauthorized users, it can cause privacy and security problems.
 
-This project provides a controlled system that checks access permissions and detects sensitive information before sharing.
+This project provides a controlled system that checks access permissions and detects sensitive information before allowing summarisation or sharing.
+
+---
 
 ## 3. Objective
 
-The main objectives are:
+The main objectives of the project are:
 
 - To control document access based on user roles.
 - To classify documents using permission labels.
 - To detect sensitive information in documents.
 - To prevent unauthorized sharing of confidential information.
+- To prevent sensitive information from appearing in unauthorized summaries.
 - To provide a dashboard for monitoring document permissions and sensitive content.
 - To provide clear explanations for access decisions.
+- To require human confirmation for sensitive sharing requests.
+- To maintain an auditable decision trail.
+
+---
 
 ## 4. User Roles
 
@@ -32,6 +49,8 @@ The system currently supports three user roles:
 - Student
 - Faculty
 - Admin
+
+---
 
 ## 5. Permission Levels
 
@@ -45,72 +64,25 @@ The system uses configurable permission rules:
 
 The permission rules are stored in `rules.json`.
 
-## 6. Key Features Completed
-
-### Role-Based Access Control
-
-The system checks whether the selected user role is authorized to access a document.
-
-### Sensitive Content Detection
-
-The system detects predefined sensitive phrases such as:
-
-- Disciplinary investigation
-- Strictly confidential
-- Salary revision
-- Restricted administrator information
-- Faculty performance review
-- Staff evaluation
-
-### Dashboard
-
-The Streamlit dashboard displays:
-
-- Total documents
-- Public documents
-- Restricted documents
-- Sensitive documents
-- Permission distribution chart
-
-### Access Decision Explanation
-
-The system explains why access is allowed or denied.
-
-## 7. Current Working Modules
-
-### `app.py`
-
-Main Streamlit application containing the user interface, dashboard, document selection, and access checking workflow.
-
-### `modules/access_control.py`
-
-Handles role-based permission checking using the configurable rules in `rules.json`.
-
-### `modules/detector.py`
-
-Detects sensitive content using predefined patterns.
-
-### `data/documents.csv`
-
-Contains synthetic university documents used for testing.
-
-### `rules.json`
-
-Contains configurable access rules for different permission levels.
-
-## 8. Current System Workflow
+Example:
 
 ```text
-User Role
+PUBLIC
     ↓
-Select Document
+Student + Faculty + Admin
+
+INTERNAL
     ↓
-Permission Check
+Student + Faculty + Admin
+
+FACULTY_ONLY
     ↓
-Sensitive Content Detection
+Faculty + Admin
+
+CONFIDENTIAL
     ↓
-Access Decision
+Admin
+
+ADMIN_ONLY
     ↓
-Explanation / Warning
-    ↓
-Dashboard Monitoring
+Admin
