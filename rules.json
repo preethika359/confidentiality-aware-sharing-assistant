@@ -1,0 +1,22 @@
+{
+    "PUBLIC": [
+        "Student",
+        "Faculty",
+        "Admin"
+    ],
+    "INTERNAL": [
+        "Student",
+        "Faculty",
+        "Admin"
+    ],
+    "FACULTY_ONLY": [
+        "Faculty",
+        "Admin"
+    ],
+    "CONFIDENTIAL": [
+        "Admin"
+    ],
+    "ADMIN_ONLY": [
+        "Admin"
+    ]
+}
