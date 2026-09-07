@@ -87,9 +87,88 @@ print(
 
 
 # ==================================================
+# TEST 4: UNAUTHORIZED USER - SALARY INFORMATION
+# ==================================================
+
+salary_content = (
+    "Faculty salary revision details are restricted "
+    "to university administrators."
+)
+
+salary_sensitive = detect_sensitive_content(
+    salary_content
+)
+
+salary_summary = generate_safe_summary(
+    "Student",
+    salary_content,
+    salary_sensitive
+)
+
+assert "salary revision" not in salary_summary
+assert "university administrators" not in salary_summary
+
+print(
+    "Test 4 Passed: Restricted salary information blocked for Student."
+)
+
+
+# ==================================================
+# TEST 5: UNAUTHORIZED USER - FACULTY PERFORMANCE
+# ==================================================
+
+performance_content = (
+    "Faculty performance review information is available "
+    "only to authorised faculty members and administrators."
+)
+
+performance_sensitive = detect_sensitive_content(
+    performance_content
+)
+
+performance_summary = generate_safe_summary(
+    "Student",
+    performance_content,
+    performance_sensitive
+)
+
+assert "faculty performance review" not in performance_summary
+
+print(
+    "Test 5 Passed: Faculty performance information blocked for Student."
+)
+
+
+# ==================================================
+# TEST 6: NORMAL PUBLIC CONTENT - NO FALSE BLOCKING
+# ==================================================
+
+library_content = (
+    "The library is open from 8 AM to 6 PM on working days."
+)
+
+library_sensitive = detect_sensitive_content(
+    library_content
+)
+
+library_summary = generate_safe_summary(
+    "Student",
+    library_content,
+    library_sensitive
+)
+
+assert "library is open" in library_summary.lower()
+assert library_sensitive["sensitive"] is False
+
+print(
+    "Test 6 Passed: Normal public content processed without false blocking."
+)
+
+
+# ==================================================
 # FINAL RESULT
 # ==================================================
 
 print(
-    "\nAll leakage tests passed successfully!"
+    "\nAll 6 leakage and edge-case tests passed successfully!"
 )
