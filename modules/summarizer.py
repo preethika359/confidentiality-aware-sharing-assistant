@@ -1,13 +1,56 @@
 def generate_safe_summary(user_role, content, sensitive_result):
 
-    # Unauthorized users
+    if not content:
+        return "No summary available."
+
+    # ==============================================
+    # UNAUTHORIZED USER - SENSITIVE CONTENT
+    # ==============================================
+
     if user_role != "Admin" and sensitive_result["sensitive"]:
+
+        safe_sentences = []
+
+        sentences = [
+            sentence.strip()
+            for sentence in content.split(".")
+            if sentence.strip()
+        ]
+
+        sensitive_items = [
+            item.lower()
+            for item in sensitive_result["items"]
+        ]
+
+        for sentence in sentences:
+
+            sentence_lower = sentence.lower()
+
+            contains_sensitive_info = any(
+                item in sentence_lower
+                for item in sensitive_items
+            )
+
+            if not contains_sensitive_info:
+                safe_sentences.append(sentence)
+
+        if safe_sentences:
+            return (
+                "Safe Summary: "
+                + safe_sentences[0]
+                + ". "
+                "Restricted details have been removed."
+            )
+
         return (
             "⚠️ This document contains restricted information. "
             "Sensitive details have been removed to protect confidentiality."
         )
 
-    # Admin users
+    # ==============================================
+    # ADMIN USER - SENSITIVE CONTENT
+    # ==============================================
+
     if user_role == "Admin" and sensitive_result["sensitive"]:
 
         sentences = [
@@ -29,7 +72,10 @@ def generate_safe_summary(user_role, content, sensitive_result):
             "for authorised administrative review."
         )
 
-    # Normal non-sensitive document
+    # ==============================================
+    # NORMAL NON-SENSITIVE CONTENT
+    # ==============================================
+
     sentences = [
         sentence.strip()
         for sentence in content.split(".")

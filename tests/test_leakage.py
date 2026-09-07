@@ -15,7 +15,7 @@ from modules.summarizer import generate_safe_summary
 
 
 # ==================================================
-# TEST 1: UNAUTHORIZED USER - SENSITIVE CONTENT
+# TEST 1: UNAUTHORIZED USER - DISCIPLINARY INFORMATION
 # ==================================================
 
 content = (
@@ -35,9 +35,7 @@ assert "STU001" not in summary
 assert "disciplinary investigation" not in summary
 assert "strictly confidential" not in summary
 
-print(
-    "Test 1 Passed: Sensitive information blocked for Student."
-)
+print("Test 1 Passed: Disciplinary information blocked.")
 
 
 # ==================================================
@@ -52,9 +50,7 @@ admin_summary = generate_safe_summary(
 
 assert "disciplinary investigation" in admin_summary
 
-print(
-    "Test 2 Passed: Authorised Admin summary generated."
-)
+print("Test 2 Passed: Admin sensitive summary generated.")
 
 
 # ==================================================
@@ -66,9 +62,7 @@ public_content = (
     "Students must report 30 minutes before the exam."
 )
 
-public_sensitive = detect_sensitive_content(
-    public_content
-)
+public_sensitive = detect_sensitive_content(public_content)
 
 public_summary = generate_safe_summary(
     "Student",
@@ -76,18 +70,13 @@ public_summary = generate_safe_summary(
     public_sensitive
 )
 
-assert (
-    "Semester examination starts on June 10"
-    in public_summary
-)
+assert "Semester examination starts on June 10" in public_summary
 
-print(
-    "Test 3 Passed: Public content summarised successfully."
-)
+print("Test 3 Passed: Public content summarised.")
 
 
 # ==================================================
-# TEST 4: UNAUTHORIZED USER - SALARY INFORMATION
+# TEST 4: SALARY INFORMATION
 # ==================================================
 
 salary_content = (
@@ -95,9 +84,7 @@ salary_content = (
     "to university administrators."
 )
 
-salary_sensitive = detect_sensitive_content(
-    salary_content
-)
+salary_sensitive = detect_sensitive_content(salary_content)
 
 salary_summary = generate_safe_summary(
     "Student",
@@ -108,13 +95,11 @@ salary_summary = generate_safe_summary(
 assert "salary revision" not in salary_summary
 assert "university administrators" not in salary_summary
 
-print(
-    "Test 4 Passed: Restricted salary information blocked for Student."
-)
+print("Test 4 Passed: Salary information blocked.")
 
 
 # ==================================================
-# TEST 5: UNAUTHORIZED USER - FACULTY PERFORMANCE
+# TEST 5: FACULTY PERFORMANCE
 # ==================================================
 
 performance_content = (
@@ -134,22 +119,18 @@ performance_summary = generate_safe_summary(
 
 assert "faculty performance review" not in performance_summary
 
-print(
-    "Test 5 Passed: Faculty performance information blocked for Student."
-)
+print("Test 5 Passed: Faculty performance information blocked.")
 
 
 # ==================================================
-# TEST 6: NORMAL PUBLIC CONTENT - NO FALSE BLOCKING
+# TEST 6: NORMAL PUBLIC CONTENT
 # ==================================================
 
 library_content = (
     "The library is open from 8 AM to 6 PM on working days."
 )
 
-library_sensitive = detect_sensitive_content(
-    library_content
-)
+library_sensitive = detect_sensitive_content(library_content)
 
 library_summary = generate_safe_summary(
     "Student",
@@ -157,18 +138,178 @@ library_summary = generate_safe_summary(
     library_sensitive
 )
 
-assert "library is open" in library_summary.lower()
 assert library_sensitive["sensitive"] is False
+assert "library is open" in library_summary.lower()
 
-print(
-    "Test 6 Passed: Normal public content processed without false blocking."
+print("Test 6 Passed: Normal content processed.")
+
+
+# ==================================================
+# TEST 7: STUDENT ID DETECTION
+# ==================================================
+
+student_id_content = (
+    "Student STU245 is eligible for the examination."
 )
+
+result = detect_sensitive_content(student_id_content)
+
+assert result["sensitive"] is True
+
+print("Test 7 Passed: Student ID pattern detected.")
+
+
+# ==================================================
+# TEST 8: RESTRICTED INFORMATION
+# ==================================================
+
+restricted_content = (
+    "This document contains restricted information "
+    "for authorised university staff."
+)
+
+result = detect_sensitive_content(restricted_content)
+
+assert result["sensitive"] is True
+assert "restricted information" in result["items"]
+
+print("Test 8 Passed: Restricted information detected.")
+
+
+# ==================================================
+# TEST 9: FINANCIAL INFORMATION
+# ==================================================
+
+financial_content = (
+    "The annual departmental budget contains "
+    "restricted financial information."
+)
+
+result = detect_sensitive_content(financial_content)
+
+assert result["sensitive"] is True
+assert "financial information" in result["items"]
+
+print("Test 9 Passed: Financial information detected.")
+
+
+# ==================================================
+# TEST 10: PERFORMANCE EVALUATION
+# ==================================================
+
+evaluation_content = (
+    "The employee performance evaluation is confidential."
+)
+
+result = detect_sensitive_content(evaluation_content)
+
+assert result["sensitive"] is True
+assert "performance evaluation" in result["items"]
+
+print("Test 10 Passed: Performance evaluation detected.")
+
+
+# ==================================================
+# TEST 11: DISCIPLINARY ACTION
+# ==================================================
+
+disciplinary_content = (
+    "The university has initiated disciplinary action "
+    "against the student."
+)
+
+result = detect_sensitive_content(disciplinary_content)
+
+assert result["sensitive"] is True
+assert "disciplinary action" in result["items"]
+
+print("Test 11 Passed: Disciplinary action detected.")
+
+
+# ==================================================
+# TEST 12: EMPTY INPUT
+# ==================================================
+
+result = detect_sensitive_content("")
+
+assert result["sensitive"] is False
+assert result["items"] == []
+
+print("Test 12 Passed: Empty input handled safely.")
+
+
+# ==================================================
+# TEST 13: NONE INPUT
+# ==================================================
+
+result = detect_sensitive_content(None)
+
+assert result["sensitive"] is False
+assert result["items"] == []
+
+print("Test 13 Passed: None input handled safely.")
+
+
+# ==================================================
+# TEST 14: MULTIPLE SENSITIVE PATTERNS
+# ==================================================
+
+multiple_content = (
+    "The disciplinary investigation includes salary revision "
+    "details and strictly confidential information."
+)
+
+result = detect_sensitive_content(multiple_content)
+
+assert result["sensitive"] is True
+assert len(result["items"]) >= 3
+
+print("Test 14 Passed: Multiple sensitive patterns detected.")
+
+
+# ==================================================
+# TEST 15: CASE INSENSITIVE DETECTION
+# ==================================================
+
+case_content = (
+    "THIS INFORMATION IS STRICTLY CONFIDENTIAL."
+)
+
+result = detect_sensitive_content(case_content)
+
+assert result["sensitive"] is True
+assert "strictly confidential" in result["items"]
+
+print("Test 15 Passed: Case-insensitive detection works.")
+
+
+# ==================================================
+# TEST 16: ADMIN SUMMARY FOR SENSITIVE CONTENT
+# ==================================================
+
+admin_content = (
+    "Faculty salary revision details are restricted "
+    "to university administrators."
+)
+
+result = detect_sensitive_content(admin_content)
+
+admin_summary = generate_safe_summary(
+    "Admin",
+    admin_content,
+    result
+)
+
+assert "salary revision" in admin_summary
+
+print("Test 16 Passed: Admin can review authorised sensitive content.")
 
 
 # ==================================================
 # FINAL RESULT
 # ==================================================
 
-print(
-    "\nAll 6 leakage and edge-case tests passed successfully!"
-)
+print("\n==============================================")
+print("ALL 16 LEAKAGE AND EDGE-CASE TESTS PASSED!")
+print("Synthetic Test Pass Rate: 100%")
+print("==============================================")

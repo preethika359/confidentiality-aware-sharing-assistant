@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 from datetime import datetime
+import os
 
 from modules.access_control import check_access
 from modules.detector import detect_sensitive_content
@@ -56,7 +57,7 @@ def add_audit_log(
     decision,
     reason
 ):
-    st.session_state.audit_log.append({
+    log_entry = {
         "Time": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         "Action": action,
         "User Role": user_role,
@@ -65,7 +66,24 @@ def add_audit_log(
         "Target Role": target_role,
         "Decision": decision,
         "Reason": reason
-    })
+    }
+
+    # Save in current session
+    st.session_state.audit_log.append(log_entry)
+
+    # Save permanently to CSV
+    audit_file = "data/audit_log.csv"
+
+    file_exists = os.path.exists(audit_file)
+
+    audit_dataframe = pd.DataFrame([log_entry])
+
+    audit_dataframe.to_csv(
+        audit_file,
+        mode="a",
+        header=not file_exists,
+        index=False
+    )
 
 
 # --------------------------------------------------
@@ -655,6 +673,9 @@ if st.session_state.sharing_request is not None:
 # --------------------------------------------------
 # AUDIT TRAIL
 # --------------------------------------------------
+# --------------------------------------------------
+# AUDIT TRAIL
+# --------------------------------------------------
 
 st.header(
     "📝 Auditable Decision Trail"
@@ -662,26 +683,32 @@ st.header(
 
 st.write(
     "This section records important access, sharing, "
-    "summarisation, and manual override decisions "
-    "made during the session."
+    "summarisation, and manual override decisions."
 )
 
+audit_file = "data/audit_log.csv"
 
-if st.session_state.audit_log:
+if os.path.exists(audit_file):
 
-    audit_dataframe = pd.DataFrame(
-        st.session_state.audit_log
-    )
+    audit_dataframe = pd.read_csv(audit_file)
 
-    st.dataframe(
-        audit_dataframe,
-        width="stretch"
-    )
+    if not audit_dataframe.empty:
+
+        st.dataframe(
+            audit_dataframe,
+            width="stretch"
+        )
+
+    else:
+
+        st.info(
+            "No audit records have been recorded yet."
+        )
 
 else:
 
     st.info(
-        "No decisions have been recorded yet."
+        "No audit records have been recorded yet."
     )
 
 
