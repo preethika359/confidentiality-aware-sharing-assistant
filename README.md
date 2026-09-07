@@ -6,7 +6,7 @@ This project is a software-based Confidentiality-Aware Summarisation and Sharing
 
 The system checks user roles and document permission levels before allowing access to university information. It also detects sensitive content and prevents unauthorized summarisation and sharing.
 
-The system provides explanations for access decisions and maintains an auditable decision trail for important actions.
+The system provides explanations for access decisions and maintains a persistent auditable decision trail for important actions.
 
 ---
 
@@ -38,7 +38,7 @@ The main objectives of the project are:
 - To provide a dashboard for monitoring document permissions and sensitive content.
 - To provide clear explanations for access decisions.
 - To require human confirmation for sensitive sharing requests.
-- To maintain an auditable decision trail.
+- To maintain a persistent auditable decision trail.
 
 ---
 
